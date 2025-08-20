@@ -38,7 +38,12 @@ A PHP server that allows creating, saving, and sharing dynamic REST API mocks th
    ```
    Edit the `.env` file to set your database connection and other settings.
 
-4. Start the server:
+4. Run migrations:
+   ```bash
+   php bin/migration.php
+   ```
+
+5. Start the server:
    ```bash
    # Using PHP built-in server
    php -S localhost:8080 -t public
@@ -46,7 +51,7 @@ A PHP server that allows creating, saving, and sharing dynamic REST API mocks th
    # Or configure your Apache/Nginx to point to the public directory
    ```
 
-5. Access the dashboard:
+6. Access the dashboard:
    ```
    http://localhost:8080/dashboard
    ```
