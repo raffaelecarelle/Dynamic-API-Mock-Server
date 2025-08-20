@@ -19,10 +19,10 @@ return [
             $container->get(LoggerInterface::class)
         );
     },
-    
+
     // Database
     Capsule::class => function () {
-        $capsule = new Capsule;
+        $capsule = new Capsule();
         $capsule->addConnection([
             'driver'    => $_ENV['DB_DRIVER'] ?? 'sqlite',
             'host'      => $_ENV['DB_HOST'] ?? 'localhost',
@@ -37,7 +37,7 @@ return [
         $capsule->bootEloquent();
         return $capsule;
     },
-    
+
     // Logger
     LoggerInterface::class => function () {
         $logger = new Logger('app');
@@ -47,7 +47,7 @@ return [
         ));
         return $logger;
     },
-    
+
     // Services
     MockService::class => function (ContainerInterface $container) {
         return new MockService(
@@ -56,20 +56,20 @@ return [
             $container->get(Capsule::class)->table('mock_endpoints')
         );
     },
-    
+
     ProjectService::class => function (ContainerInterface $container) {
         return new ProjectService(
             $container->get(LoggerInterface::class),
             $container->get(Capsule::class)->table('projects')
         );
     },
-    
+
     ResponseGeneratorService::class => function (ContainerInterface $container) {
         return new ResponseGeneratorService(
             $container->get(LoggerInterface::class)
         );
     },
-    
+
     SharedMockRequestHandler::class => function (ContainerInterface $container) {
         return new SharedMockRequestHandler(
             $container->get(ProjectService::class),

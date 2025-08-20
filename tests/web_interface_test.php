@@ -1,7 +1,8 @@
 <?php
+
 /**
  * Simple test script for the Dynamic API Mock Server web interface
- * 
+ *
  * This script tests the basic functionality of the web interface
  * Run with: php tests/web_interface_test.php
  */
@@ -19,9 +20,10 @@ $colors = [
 ];
 
 // Helper functions
-function makeRequest($url) {
+function makeRequest($url)
+{
     $curl = curl_init();
-    
+
     curl_setopt_array($curl, [
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
@@ -32,24 +34,25 @@ function makeRequest($url) {
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => 'GET'
     ]);
-    
+
     $response = curl_exec($curl);
     $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    
+
     curl_close($curl);
-    
+
     return [
         'status_code' => $statusCode,
         'body' => $response
     ];
 }
 
-function logTest($name, $success, $message = '') {
+function logTest($name, $success, $message = '')
+{
     global $colors;
-    
+
     $status = $success ? $colors['green'] . 'PASS' : $colors['red'] . 'FAIL';
     echo $colors['blue'] . "[$name] " . $status . $colors['reset'] . " $message\n";
-    
+
     return $success;
 }
 

@@ -61,16 +61,16 @@ class ProjectService
     public function createProject(array $data): array
     {
         $this->logger->info('Creating new project', ['data' => $data]);
-        
+
         // Generate a share token if not provided
         if (!isset($data['share_token'])) {
             $data['share_token'] = Uuid::uuid4()->toString();
         }
-        
+
         $project = new Project();
         $project->fill($data);
         $project->save();
-        
+
         return $project->toArray();
     }
 
@@ -84,15 +84,15 @@ class ProjectService
     public function updateProject(int $id, array $data): ?array
     {
         $this->logger->info('Updating project', ['id' => $id, 'data' => $data]);
-        
+
         $project = Project::find($id);
         if (!$project) {
             return null;
         }
-        
+
         $project->fill($data);
         $project->save();
-        
+
         return $project->toArray();
     }
 
@@ -105,12 +105,12 @@ class ProjectService
     public function deleteProject(int $id): bool
     {
         $this->logger->info('Deleting project', ['id' => $id]);
-        
+
         $project = Project::find($id);
         if (!$project) {
             return false;
         }
-        
+
         return (bool) $project->delete();
     }
 
@@ -126,7 +126,7 @@ class ProjectService
         if (!$project) {
             return null;
         }
-        
+
         return $project->export();
     }
 
@@ -139,62 +139,62 @@ class ProjectService
     public function importProject(array $data): array
     {
         $this->logger->info('Importing project');
-        
+
         // Begin transaction
         \Illuminate\Database\Capsule\Manager::beginTransaction();
-        
+
         try {
             // Extract project and mocks data
             $projectData = $data['project'] ?? [];
             $mocksData = $data['mocks'] ?? [];
-            
+
             if (empty($projectData)) {
                 throw new \InvalidArgumentException('Project data is required');
             }
-            
+
             // Create the project
             $project = new Project();
-            
+
             // Remove ID if present
             if (isset($projectData['id'])) {
                 unset($projectData['id']);
             }
-            
+
             // Generate a new share token
             $projectData['share_token'] = Uuid::uuid4()->toString();
-            
+
             $project->fill($projectData);
             $project->save();
-            
+
             // Create the mocks
             foreach ($mocksData as $mockData) {
                 // Remove ID if present
                 if (isset($mockData['id'])) {
                     unset($mockData['id']);
                 }
-                
+
                 // Set the project ID
                 $mockData['project_id'] = $project->id;
-                
+
                 // Create the mock
                 $mock = new \App\Models\MockEndpoint();
                 $mock->fill($mockData);
                 $mock->save();
             }
-            
+
             // Commit transaction
             \Illuminate\Database\Capsule\Manager::commit();
-            
+
             return $project->export();
         } catch (\Exception $e) {
             // Rollback transaction
             \Illuminate\Database\Capsule\Manager::rollBack();
-            
+
             $this->logger->error('Error importing project', ['error' => $e->getMessage()]);
             throw $e;
         }
     }
-    
+
     /**
      * Get a project by share token
      *
@@ -204,12 +204,12 @@ class ProjectService
     public function getProjectByShareToken(string $shareToken): ?array
     {
         $this->logger->info('Getting project by share token', ['token' => $shareToken]);
-        
+
         $project = Project::where('share_token', $shareToken)->first();
         if (!$project) {
             return null;
         }
-        
+
         return $project->export();
     }
 }

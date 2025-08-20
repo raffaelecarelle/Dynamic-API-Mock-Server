@@ -13,7 +13,7 @@ class MockService
      * @var LoggerInterface
      */
     private $logger;
-    
+
     /**
      * @var ResponseGeneratorService
      */
@@ -50,7 +50,7 @@ class MockService
         if ($projectId !== null) {
             $query->where('project_id', $projectId);
         }
-        
+
         return $query->get()->toArray();
     }
 
@@ -75,18 +75,18 @@ class MockService
     public function createMock(array $data): array
     {
         $this->logger->info('Creating new mock endpoint', ['data' => $data]);
-        
+
         // Validate project exists
         $project = Project::find($data['project_id'] ?? null);
         if (!$project) {
             throw new \InvalidArgumentException('Project not found');
         }
-        
+
         // Create the mock endpoint
         $mock = new MockEndpoint();
         $mock->fill($data);
         $mock->save();
-        
+
         return $mock->toArray();
     }
 
@@ -100,12 +100,12 @@ class MockService
     public function updateMock(int $id, array $data): ?array
     {
         $this->logger->info('Updating mock endpoint', ['id' => $id, 'data' => $data]);
-        
+
         $mock = MockEndpoint::find($id);
         if (!$mock) {
             return null;
         }
-        
+
         // If project_id is being changed, validate the new project exists
         if (isset($data['project_id']) && $data['project_id'] !== $mock->project_id) {
             $project = Project::find($data['project_id']);
@@ -113,10 +113,10 @@ class MockService
                 throw new \InvalidArgumentException('Project not found');
             }
         }
-        
+
         $mock->fill($data);
         $mock->save();
-        
+
         return $mock->toArray();
     }
 
@@ -129,12 +129,12 @@ class MockService
     public function deleteMock(int $id): bool
     {
         $this->logger->info('Deleting mock endpoint', ['id' => $id]);
-        
+
         $mock = MockEndpoint::find($id);
         if (!$mock) {
             return false;
         }
-        
+
         return (bool) $mock->delete();
     }
 
@@ -153,17 +153,17 @@ class MockService
             'method' => $method,
             'path' => $path
         ]);
-        
+
         // Find the project by slug or ID
-        $project = is_numeric($projectSlug) 
+        $project = is_numeric($projectSlug)
             ? Project::find($projectSlug)
             : Project::where('name', $projectSlug)->first();
-            
+
         if (!$project) {
             $this->logger->warning('Project not found', ['project' => $projectSlug]);
             return null;
         }
-        
+
         // Get all mocks for this project with the matching method
         $mocks = MockEndpoint::where('project_id', $project->id)
             ->where('method', strtoupper($method))
@@ -173,17 +173,17 @@ class MockService
         foreach ($mocks as $mock) {
             if ($mock->matchesPath($path)) {
                 $this->logger->info('Found matching mock', ['id' => $mock->id]);
-                
+
                 // Extract path parameters
                 $pathParams = $mock->extractPathParams($path);
-                
+
                 return [
                     'mock' => $mock->toArray(),
                     'path_params' => $pathParams
                 ];
             }
         }
-        
+
         $this->logger->warning('No matching mock found');
         return null;
     }
@@ -201,7 +201,7 @@ class MockService
             'mock_id' => $mockData['id'] ?? 'unknown',
             'request' => $requestData
         ]);
-        
+
         // Apply delay if configured
         $delay = $mockData['delay'] ?? 0;
         if ($delay > 0) {
@@ -209,7 +209,7 @@ class MockService
             $delay = min($delay, $maxDelay);
             usleep($delay * 1000); // Convert to microseconds
         }
-        
+
         // Generate the response
         return $this->responseGenerator->generateResponse($mockData, $requestData);
     }

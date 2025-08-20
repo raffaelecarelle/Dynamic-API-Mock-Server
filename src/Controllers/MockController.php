@@ -13,7 +13,7 @@ class MockController
      * @var MockService
      */
     private $mockService;
-    
+
     /**
      * @var LoggerInterface
      */
@@ -42,14 +42,14 @@ class MockController
     {
         $queryParams = $request->getQueryParams();
         $projectId = isset($queryParams['project_id']) ? (int) $queryParams['project_id'] : null;
-        
+
         $mocks = $this->mockService->getAllMocks($projectId);
-        
+
         $response->getBody()->write(json_encode([
             'status' => 'success',
             'data' => $mocks
         ]));
-        
+
         return $response->withHeader('Content-Type', 'application/json');
     }
 
@@ -65,23 +65,23 @@ class MockController
     {
         $id = (int) $args['id'];
         $mock = $this->mockService->getMockById($id);
-        
+
         if (!$mock) {
             $response->getBody()->write(json_encode([
                 'status' => 'error',
                 'message' => 'Mock endpoint not found'
             ]));
-            
+
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(404);
         }
-        
+
         $response->getBody()->write(json_encode([
             'status' => 'success',
             'data' => $mock
         ]));
-        
+
         return $response->withHeader('Content-Type', 'application/json');
     }
 
@@ -95,26 +95,26 @@ class MockController
     public function create(Request $request, Response $response): Response
     {
         $data = $request->getParsedBody();
-        
+
         try {
             $mock = $this->mockService->createMock($data);
-            
+
             $response->getBody()->write(json_encode([
                 'status' => 'success',
                 'data' => $mock
             ]));
-            
+
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(201);
         } catch (\Exception $e) {
             $this->logger->error('Error creating mock endpoint', ['error' => $e->getMessage()]);
-            
+
             $response->getBody()->write(json_encode([
                 'status' => 'error',
                 'message' => 'Error creating mock endpoint: ' . $e->getMessage()
             ]));
-            
+
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(400);
@@ -133,35 +133,35 @@ class MockController
     {
         $id = (int) $args['id'];
         $data = $request->getParsedBody();
-        
+
         try {
             $mock = $this->mockService->updateMock($id, $data);
-            
+
             if (!$mock) {
                 $response->getBody()->write(json_encode([
                     'status' => 'error',
                     'message' => 'Mock endpoint not found'
                 ]));
-                
+
                 return $response
                     ->withHeader('Content-Type', 'application/json')
                     ->withStatus(404);
             }
-            
+
             $response->getBody()->write(json_encode([
                 'status' => 'success',
                 'data' => $mock
             ]));
-            
+
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
             $this->logger->error('Error updating mock endpoint', ['error' => $e->getMessage()]);
-            
+
             $response->getBody()->write(json_encode([
                 'status' => 'error',
                 'message' => 'Error updating mock endpoint: ' . $e->getMessage()
             ]));
-            
+
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(400);
@@ -179,25 +179,25 @@ class MockController
     public function delete(Request $request, Response $response, array $args): Response
     {
         $id = (int) $args['id'];
-        
+
         $result = $this->mockService->deleteMock($id);
-        
+
         if (!$result) {
             $response->getBody()->write(json_encode([
                 'status' => 'error',
                 'message' => 'Mock endpoint not found'
             ]));
-            
+
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(404);
         }
-        
+
         $response->getBody()->write(json_encode([
             'status' => 'success',
             'message' => 'Mock endpoint deleted successfully'
         ]));
-        
+
         return $response->withHeader('Content-Type', 'application/json');
     }
 }

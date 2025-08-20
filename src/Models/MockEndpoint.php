@@ -54,7 +54,7 @@ class MockEndpoint extends Model
         // Convert path with parameters to regex pattern
         $pattern = preg_replace('/\{([^\/]+)\}/', '([^/]+)', $this->path);
         $pattern = '@^' . $pattern . '$@';
-        
+
         return (bool) preg_match($pattern, $requestPath);
     }
 
@@ -67,32 +67,32 @@ class MockEndpoint extends Model
     public function extractPathParams(string $requestPath): array
     {
         $params = [];
-        
+
         // If no parameters in path, return empty array
         if (strpos($this->path, '{') === false) {
             return $params;
         }
-        
+
         // Extract parameter names from path
         preg_match_all('/\{([^\/]+)\}/', $this->path, $paramNames);
-        
+
         // Convert path with parameters to regex pattern with capture groups
         $pattern = preg_replace('/\{([^\/]+)\}/', '([^/]+)', $this->path);
         $pattern = '@^' . $pattern . '$@';
-        
+
         // Extract parameter values from request path
         preg_match($pattern, $requestPath, $paramValues);
-        
+
         // Skip the first match (full string)
         array_shift($paramValues);
-        
+
         // Combine parameter names with values
         foreach ($paramNames[1] as $index => $name) {
             if (isset($paramValues[$index])) {
                 $params[$name] = $paramValues[$index];
             }
         }
-        
+
         return $params;
     }
 }

@@ -11,13 +11,13 @@ use Slim\Psr7\Response as Psr7Response;
 
 return function (App $app) {
     $container = $app->getContainer();
-    
+
     // Parse JSON, form data and xml
     $app->addBodyParsingMiddleware();
 
     // Add Content Length header to response
     $app->add(new ContentLengthMiddleware());
-    
+
     // Add CORS middleware
     $app->add(function (Request $request, RequestHandler $handler) {
         $response = $handler->handle($request);
@@ -27,7 +27,7 @@ return function (App $app) {
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
             ->withHeader('Access-Control-Allow-Credentials', 'true');
     });
-    
+
     // Add request logging middleware
     $app->add(function (Request $request, RequestHandler $handler) use ($container) {
         $logger = $container->get(LoggerInterface::class);
@@ -36,13 +36,13 @@ return function (App $app) {
             'query' => $request->getQueryParams(),
             'body' => $request->getParsedBody()
         ]);
-        
+
         $response = $handler->handle($request);
-        
+
         $logger->info('Response: ' . $response->getStatusCode());
         return $response;
     });
-    
+
     // Add error middleware
     $errorMiddleware = $app->addErrorMiddleware(
         $_ENV['DISPLAY_ERROR_DETAILS'] ?? true,
@@ -50,7 +50,7 @@ return function (App $app) {
         $_ENV['LOG_ERROR_DETAILS'] ?? true,
         $container->get(LoggerInterface::class)
     );
-    
+
     // Define custom error handler
     $errorHandler = $errorMiddleware->getDefaultErrorHandler();
     $errorHandler->forceContentType('application/json');

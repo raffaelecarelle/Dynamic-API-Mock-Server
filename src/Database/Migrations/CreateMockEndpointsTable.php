@@ -27,7 +27,7 @@ class CreateMockEndpointsTable
             $table->json('dynamic_rules')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();
-            
+
             // Create an index on method and path for faster lookups
             $table->index(['project_id', 'method', 'path']);
         });

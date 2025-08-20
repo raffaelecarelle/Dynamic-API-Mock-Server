@@ -16,7 +16,7 @@ return function (App $app) {
             ->withHeader('Location', '/dashboard')
             ->withStatus(302);
     });
-    
+
     // API routes
     $app->group('/api', function (Group $group) {
         // Project endpoints
@@ -29,7 +29,7 @@ return function (App $app) {
             $group->post('/{id}/export', [ProjectController::class, 'export']);
             $group->post('/import', [ProjectController::class, 'import']);
         });
-        
+
         // Mock endpoints
         $group->group('/mocks', function (Group $group) {
             $group->get('', [MockController::class, 'getAll']);
@@ -38,11 +38,11 @@ return function (App $app) {
             $group->put('/{id}', [MockController::class, 'update']);
             $group->delete('/{id}', [MockController::class, 'delete']);
         });
-        
+
         // Shared project endpoint
         $group->get('/share/{token}', [ProjectController::class, 'getByShareToken']);
     });
-    
+
     // Dashboard routes (web interface)
     $app->group('/dashboard', function (Group $group) {
         $group->get('', [\App\Controllers\DashboardController::class, 'index']);
@@ -50,20 +50,22 @@ return function (App $app) {
         $group->get('/mocks', [\App\Controllers\DashboardController::class, 'mocks']);
         $group->get('/documentation', [\App\Controllers\DashboardController::class, 'documentation']);
     });
-    
+
     // Mock request handler - this handles all dynamic mock endpoints
     $app->any('/mock/{project}/{path:.+}', MockRequestHandler::class);
 
     // Shared mock request handler - this handles mock endpoints via share token
     $app->any('/share/{token}/{path:.+}', SharedMockRequestHandler::class);
-    
+
     // Handle OPTIONS requests for CORS preflight
     $app->options('/{routes:.+}', function (Request $request, Response $response) {
         return $response;
     });
-    
+
     // 404 Not Found handler
-    $app->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', 
+    $app->map(
+        ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+        '/{routes:.+}',
         function (Request $request, Response $response) {
             $response->getBody()->write(json_encode([
                 'status' => 'error',

@@ -14,12 +14,12 @@ class DashboardController
      * @var ProjectService
      */
     private $projectService;
-    
+
     /**
      * @var MockService
      */
     private $mockService;
-    
+
     /**
      * @var LoggerInterface
      */
@@ -54,13 +54,13 @@ class DashboardController
         // Get template content
         $template = file_get_contents(__DIR__ . '/../../public/templates/layout.html');
         $content = file_get_contents(__DIR__ . '/../../public/templates/dashboard.html');
-        
+
         // Replace content placeholder
         $html = str_replace('{{content}}', $content, $template);
-        
+
         // Add page title
         $html = str_replace('{{title}}', 'Dashboard', $html);
-        
+
         $response->getBody()->write($html);
         return $response->withHeader('Content-Type', 'text/html');
     }
@@ -77,13 +77,13 @@ class DashboardController
         // Get template content
         $template = file_get_contents(__DIR__ . '/../../public/templates/layout.html');
         $content = file_get_contents(__DIR__ . '/../../public/templates/projects.html');
-        
+
         // Replace content placeholder
         $html = str_replace('{{content}}', $content, $template);
-        
+
         // Add page title
         $html = str_replace('{{title}}', 'Projects', $html);
-        
+
         $response->getBody()->write($html);
         return $response->withHeader('Content-Type', 'text/html');
     }
@@ -100,17 +100,17 @@ class DashboardController
         // Get template content
         $template = file_get_contents(__DIR__ . '/../../public/templates/layout.html');
         $content = file_get_contents(__DIR__ . '/../../public/templates/mocks.html');
-        
+
         // Replace content placeholder
         $html = str_replace('{{content}}', $content, $template);
-        
+
         // Add page title
         $html = str_replace('{{title}}', 'Mock Endpoints', $html);
-        
+
         $response->getBody()->write($html);
         return $response->withHeader('Content-Type', 'text/html');
     }
-    
+
     /**
      * Render the documentation page
      *
@@ -123,13 +123,13 @@ class DashboardController
         // Get template content
         $template = file_get_contents(__DIR__ . '/../../public/templates/layout.html');
         $content = file_get_contents(__DIR__ . '/../../public/templates/documentation.html');
-        
+
         // Replace content placeholder
         $html = str_replace('{{content}}', $content, $template);
-        
+
         // Add page title
         $html = str_replace('{{title}}', 'API Documentation', $html);
-        
+
         $response->getBody()->write($html);
         return $response->withHeader('Content-Type', 'text/html');
     }
