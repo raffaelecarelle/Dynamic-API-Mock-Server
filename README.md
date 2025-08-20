@@ -23,7 +23,7 @@ A PHP server that allows creating, saving, and sharing dynamic REST API mocks th
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/dynamic-api-mock-server.git
+   git clone https://github.com/raffaelecarelle/dynamic-api-mock-server.git
    cd dynamic-api-mock-server
    ```
 
