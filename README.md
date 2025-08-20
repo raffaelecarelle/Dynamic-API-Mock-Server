@@ -34,7 +34,7 @@ A PHP server that allows creating, saving, and sharing dynamic REST API mocks th
 
 3. Configure the environment:
    ```bash
-   cp .env.example .env
+   cp .env.dist .env
    ```
    Edit the `.env` file to set your database connection and other settings.
 
