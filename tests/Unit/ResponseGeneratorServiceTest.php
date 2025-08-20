@@ -71,8 +71,8 @@ class ResponseGeneratorServiceTest extends TestCase
                         'operator' => 'equals',
                         'value' => '42'
                     ],
-                    'true_value' => 'answer',
-                    'false_value' => 'unknown'
+                    'then' => 'answer',
+                    'else' => 'unknown'
                 ]
             ]
         ];
