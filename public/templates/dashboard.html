@@ -1,0 +1,396 @@
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Dashboard</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-folder"></i> Projects</h5>
+                <p class="card-text">Manage your mock API projects.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                        <a href="/dashboard/projects" class="btn btn-sm btn-outline-primary">View Projects</a>
+                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#createProjectModal">
+                            Create New
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#shareProjectModal">
+                            Share
+                        </button>
+                    </div>
+                    <span class="badge bg-primary rounded-pill" id="projectCount">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-code-slash"></i> Mock Endpoints</h5>
+                <p class="card-text">Create and manage your mock API endpoints.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                        <a href="/dashboard/mocks" class="btn btn-sm btn-outline-primary">View Endpoints</a>
+                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#createMockModal">
+                            Create New
+                        </button>
+                    </div>
+                    <span class="badge bg-primary rounded-pill" id="mockCount">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-arrow-repeat"></i> Recent Requests</h5>
+                <p class="card-text">View recent requests to your mock APIs.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="#" class="btn btn-sm btn-outline-primary">View Logs</a>
+                    <span class="badge bg-primary rounded-pill" id="requestCount">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Quick Start Guide</h5>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">How to create and use mock APIs</h5>
+                <ol>
+                    <li>Create a new project to organize your mock endpoints</li>
+                    <li>Add mock endpoints with specific HTTP methods and paths</li>
+                    <li>Configure the response status, headers, and body</li>
+                    <li>Use dynamic rules to create variable responses</li>
+                    <li>Access your mock API at <code>/mock/{project}/{path}</code></li>
+                </ol>
+                <h5 class="card-title mt-4">Example curl command:</h5>
+                <pre><code>curl -X GET "http://localhost:8080/mock/my-project/api/users/123"</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Project Modal -->
+<div class="modal fade" id="createProjectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createProjectForm">
+                    <div class="mb-3">
+                        <label for="projectName" class="form-label">Project Name</label>
+                        <input type="text" class="form-control" id="projectName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="projectDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="projectDescription" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="projectIsPublic">
+                        <label class="form-check-label" for="projectIsPublic">Public Project</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveProjectBtn">Create Project</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Share Project Modal -->
+<div class="modal fade" id="shareProjectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Share Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="shareProjectSelect" class="form-label">Select Project</label>
+                    <select class="form-select" id="shareProjectSelect">
+                        <option value="">Select a project</option>
+                    </select>
+                </div>
+                
+                <div id="shareLinksContainer" class="d-none">
+                    <div class="mb-3">
+                        <label class="form-label">Project API Link</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="projectShareLink" readonly>
+                            <button class="btn btn-outline-secondary copy-link-btn" type="button">Copy</button>
+                        </div>
+                        <div class="form-text">Use this link to access the project data via API</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Mock Endpoints Base URL</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="mockShareLink" readonly>
+                            <button class="btn btn-outline-secondary copy-link-btn" type="button">Copy</button>
+                        </div>
+                        <div class="form-text">Use this as the base URL for accessing mock endpoints</div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Anyone with these links can access your mock endpoints.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Mock Modal -->
+<div class="modal fade" id="createMockModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Mock Endpoint</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createMockForm">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="mockProject" class="form-label">Project</label>
+                            <select class="form-select" id="mockProject" required>
+                                <option value="">Select a project</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="mockMethod" class="form-label">HTTP Method</label>
+                            <select class="form-select" id="mockMethod" required>
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="DELETE">DELETE</option>
+                                <option value="PATCH">PATCH</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mockPath" class="form-label">Path</label>
+                        <input type="text" class="form-control" id="mockPath" placeholder="/api/users/{id}" required>
+                        <div class="form-text">Use {param} for path parameters</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="mockStatusCode" class="form-label">Status Code</label>
+                            <input type="number" class="form-control" id="mockStatusCode" value="200" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="mockDelay" class="form-label">Delay (ms)</label>
+                            <input type="number" class="form-control" id="mockDelay" value="0" min="0" max="5000">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mockDescription" class="form-label">Description</label>
+                        <input type="text" class="form-control" id="mockDescription">
+                    </div>
+                    <div class="mb-3">
+                        <label for="mockHeaders" class="form-label">Headers (JSON)</label>
+                        <textarea class="form-control" id="mockHeaders" rows="2">{"Content-Type": "application/json"}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mockResponseBody" class="form-label">Response Body (JSON)</label>
+                        <textarea class="form-control" id="mockResponseBody" rows="5">{"message": "Success"}</textarea>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="mockIsDynamic">
+                        <label class="form-check-label" for="mockIsDynamic">Dynamic Response</label>
+                    </div>
+                    <div id="dynamicRulesSection" class="mb-3 d-none">
+                        <label for="mockDynamicRules" class="form-label">Dynamic Rules (JSON)</label>
+                        <textarea class="form-control" id="mockDynamicRules" rows="5">[
+  {
+    "type": "random_number",
+    "target": "data.id",
+    "min": 1,
+    "max": 1000
+  }
+]</textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveMockBtn">Create Mock Endpoint</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle dynamic rules section
+    document.getElementById('mockIsDynamic').addEventListener('change', function() {
+        const dynamicRulesSection = document.getElementById('dynamicRulesSection');
+        if (this.checked) {
+            dynamicRulesSection.classList.remove('d-none');
+        } else {
+            dynamicRulesSection.classList.add('d-none');
+        }
+    });
+
+    // Load dashboard data
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fetch projects count
+        axios.get('/api/projects')
+            .then(response => {
+                if (response.data.status === 'success') {
+                    document.getElementById('projectCount').textContent = response.data.data.length;
+                    
+                    // Populate project select
+                    const projectSelect = document.getElementById('mockProject');
+                    response.data.data.forEach(project => {
+                        const option = document.createElement('option');
+                        option.value = project.id;
+                        option.textContent = project.name;
+                        projectSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => console.error('Error fetching projects:', error));
+        
+        // Fetch mocks count
+        axios.get('/api/mocks')
+            .then(response => {
+                if (response.data.status === 'success') {
+                    document.getElementById('mockCount').textContent = response.data.data.length;
+                }
+            })
+            .catch(error => console.error('Error fetching mocks:', error));
+    });
+
+    // Create project
+    document.getElementById('saveProjectBtn').addEventListener('click', function() {
+        const projectData = {
+            name: document.getElementById('projectName').value,
+            description: document.getElementById('projectDescription').value,
+            is_public: document.getElementById('projectIsPublic').checked
+        };
+        
+        axios.post('/api/projects', projectData)
+            .then(response => {
+                if (response.data.status === 'success') {
+                    // Close modal and refresh page
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('createProjectModal'));
+                    modal.hide();
+                    window.location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error creating project:', error);
+                alert('Error creating project: ' + (error.response?.data?.message || error.message));
+            });
+    });
+
+    // Create mock endpoint
+    document.getElementById('saveMockBtn').addEventListener('click', function() {
+        try {
+            const mockData = {
+                project_id: document.getElementById('mockProject').value,
+                method: document.getElementById('mockMethod').value,
+                path: document.getElementById('mockPath').value,
+                status_code: parseInt(document.getElementById('mockStatusCode').value),
+                delay: parseInt(document.getElementById('mockDelay').value),
+                description: document.getElementById('mockDescription').value,
+                headers: JSON.parse(document.getElementById('mockHeaders').value),
+                response_body: JSON.parse(document.getElementById('mockResponseBody').value),
+                is_dynamic: document.getElementById('mockIsDynamic').checked
+            };
+            
+            if (mockData.is_dynamic) {
+                mockData.dynamic_rules = JSON.parse(document.getElementById('mockDynamicRules').value);
+            }
+            
+            axios.post('/api/mocks', mockData)
+                .then(response => {
+                    if (response.data.status === 'success') {
+                        // Close modal and refresh page
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('createMockModal'));
+                        modal.hide();
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error creating mock endpoint:', error);
+                    alert('Error creating mock endpoint: ' + (error.response?.data?.message || error.message));
+                });
+        } catch (e) {
+            alert('Invalid JSON format: ' + e.message);
+        }
+    });
+    
+    // Load projects for share modal
+    document.querySelector('button[data-bs-target="#shareProjectModal"]').addEventListener('click', function() {
+        // Clear previous options
+        const projectSelect = document.getElementById('shareProjectSelect');
+        projectSelect.innerHTML = '<option value="">Select a project</option>';
+        
+        // Fetch projects
+        axios.get('/api/projects')
+            .then(response => {
+                if (response.data.status === 'success') {
+                    response.data.data.forEach(project => {
+                        const option = document.createElement('option');
+                        option.value = project.id;
+                        option.textContent = project.name;
+                        option.dataset.token = project.share_token;
+                        projectSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => console.error('Error fetching projects:', error));
+    });
+    
+    // Update share links when project is selected
+    document.getElementById('shareProjectSelect').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const shareToken = selectedOption.dataset.token;
+        const projectId = this.value;
+        
+        if (shareToken && projectId) {
+            const baseUrl = window.location.origin;
+            document.getElementById('projectShareLink').value = `${baseUrl}/api/share/${shareToken}`;
+            document.getElementById('mockShareLink').value = `${baseUrl}/share/${shareToken}/`;
+            document.getElementById('shareLinksContainer').classList.remove('d-none');
+        } else {
+            document.getElementById('shareLinksContainer').classList.add('d-none');
+        }
+    });
+    
+    // Copy share link to clipboard
+    document.querySelectorAll('.copy-link-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.previousElementSibling;
+            input.select();
+            document.execCommand('copy');
+            
+            // Show copied message
+            const originalText = this.textContent;
+            this.textContent = 'Copied!';
+            setTimeout(() => {
+                this.textContent = originalText;
+            }, 2000);
+        });
+    });
+</script>

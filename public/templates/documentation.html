@@ -1,0 +1,434 @@
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">API Documentation</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="list-group sticky-top" style="top: 20px;">
+            <a href="#introduction" class="list-group-item list-group-item-action">Introduction</a>
+            <a href="#getting-started" class="list-group-item list-group-item-action">Getting Started</a>
+            <a href="#projects-api" class="list-group-item list-group-item-action">Projects API</a>
+            <a href="#mocks-api" class="list-group-item list-group-item-action">Mock Endpoints API</a>
+            <a href="#using-mocks" class="list-group-item list-group-item-action">Using Mock Endpoints</a>
+            <a href="#dynamic-responses" class="list-group-item list-group-item-action">Dynamic Responses</a>
+            <a href="#sharing" class="list-group-item list-group-item-action">Sharing</a>
+            <a href="#examples" class="list-group-item list-group-item-action">Examples</a>
+        </div>
+    </div>
+    
+    <div class="col-md-9">
+        <div class="card mb-4" id="introduction">
+            <div class="card-header">
+                <h2>Introduction</h2>
+            </div>
+            <div class="card-body">
+                <p>The Dynamic API Mock Server is a tool that allows you to create, manage, and share mock REST API endpoints. It's designed to help frontend developers, QA engineers, and anyone who needs to simulate API responses during development and testing.</p>
+                
+                <p>Key features include:</p>
+                <ul>
+                    <li>Create mock endpoints for any HTTP method (GET, POST, PUT, DELETE, PATCH)</li>
+                    <li>Organize endpoints into projects</li>
+                    <li>Configure response status codes, headers, and body</li>
+                    <li>Create dynamic responses with randomized data</li>
+                    <li>Simulate network delays</li>
+                    <li>Share mock endpoints with others</li>
+                    <li>Import and export projects</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card mb-4" id="getting-started">
+            <div class="card-header">
+                <h2>Getting Started</h2>
+            </div>
+            <div class="card-body">
+                <h4>1. Create a Project</h4>
+                <p>First, create a project to organize your mock endpoints:</p>
+                <ol>
+                    <li>Go to the <a href="/dashboard/projects">Projects</a> page</li>
+                    <li>Click "Create Project"</li>
+                    <li>Enter a name and optional description</li>
+                    <li>Choose whether the project should be public or private</li>
+                    <li>Click "Create Project"</li>
+                </ol>
+                
+                <h4>2. Create a Mock Endpoint</h4>
+                <p>Next, create a mock endpoint within your project:</p>
+                <ol>
+                    <li>Go to the <a href="/dashboard/mocks">Mock Endpoints</a> page</li>
+                    <li>Click "Create Mock Endpoint"</li>
+                    <li>Select your project</li>
+                    <li>Configure the endpoint (method, path, status code, etc.)</li>
+                    <li>Define the response body and headers</li>
+                    <li>Click "Create Mock Endpoint"</li>
+                </ol>
+                
+                <h4>3. Use Your Mock Endpoint</h4>
+                <p>Your mock endpoint is now available at:</p>
+                <pre><code>http://localhost:8080/mock/{project-name}/{endpoint-path}</code></pre>
+                <p>For example, if your project is named "users-api" and your endpoint path is "/api/users", the URL would be:</p>
+                <pre><code>http://localhost:8080/mock/users-api/api/users</code></pre>
+            </div>
+        </div>
+        
+        <div class="card mb-4" id="projects-api">
+            <div class="card-header">
+                <h2>Projects API</h2>
+            </div>
+            <div class="card-body">
+                <p>The Projects API allows you to manage projects programmatically.</p>
+                
+                <h4>List All Projects</h4>
+                <pre><code>GET /api/projects</code></pre>
+                <p>Returns a list of all projects.</p>
+                
+                <h4>Get a Project</h4>
+                <pre><code>GET /api/projects/{id}</code></pre>
+                <p>Returns details for a specific project.</p>
+                
+                <h4>Create a Project</h4>
+                <pre><code>POST /api/projects</code></pre>
+                <p>Creates a new project. Required fields:</p>
+                <ul>
+                    <li><code>name</code> (string): The project name</li>
+                </ul>
+                <p>Optional fields:</p>
+                <ul>
+                    <li><code>description</code> (string): Project description</li>
+                    <li><code>is_public</code> (boolean): Whether the project is public (default: false)</li>
+                </ul>
+                
+                <h4>Update a Project</h4>
+                <pre><code>PUT /api/projects/{id}</code></pre>
+                <p>Updates an existing project. Fields are the same as for creation.</p>
+                
+                <h4>Delete a Project</h4>
+                <pre><code>DELETE /api/projects/{id}</code></pre>
+                <p>Deletes a project and all its mock endpoints.</p>
+                
+                <h4>Export a Project</h4>
+                <pre><code>POST /api/projects/{id}/export</code></pre>
+                <p>Exports a project with all its mock endpoints.</p>
+                
+                <h4>Import a Project</h4>
+                <pre><code>POST /api/projects/import</code></pre>
+                <p>Imports a project with its mock endpoints. The request body should contain the exported project data.</p>
+                
+                <h4>Get a Project by Share Token</h4>
+                <pre><code>GET /api/share/{token}</code></pre>
+                <p>Returns a project by its share token.</p>
+            </div>
+        </div>
+        
+        <div class="card mb-4" id="mocks-api">
+            <div class="card-header">
+                <h2>Mock Endpoints API</h2>
+            </div>
+            <div class="card-body">
+                <p>The Mock Endpoints API allows you to manage mock endpoints programmatically.</p>
+                
+                <h4>List All Mock Endpoints</h4>
+                <pre><code>GET /api/mocks</code></pre>
+                <p>Returns a list of all mock endpoints. You can filter by project ID:</p>
+                <pre><code>GET /api/mocks?project_id={project_id}</code></pre>
+                
+                <h4>Get a Mock Endpoint</h4>
+                <pre><code>GET /api/mocks/{id}</code></pre>
+                <p>Returns details for a specific mock endpoint.</p>
+                
+                <h4>Create a Mock Endpoint</h4>
+                <pre><code>POST /api/mocks</code></pre>
+                <p>Creates a new mock endpoint. Required fields:</p>
+                <ul>
+                    <li><code>project_id</code> (integer): The ID of the project</li>
+                    <li><code>method</code> (string): HTTP method (GET, POST, PUT, DELETE, PATCH)</li>
+                    <li><code>path</code> (string): Endpoint path (e.g., "/api/users")</li>
+                </ul>
+                <p>Optional fields:</p>
+                <ul>
+                    <li><code>status_code</code> (integer): HTTP status code (default: 200)</li>
+                    <li><code>headers</code> (object): Response headers</li>
+                    <li><code>response_body</code> (object): Response body</li>
+                    <li><code>delay</code> (integer): Response delay in milliseconds</li>
+                    <li><code>is_dynamic</code> (boolean): Whether the response is dynamic</li>
+                    <li><code>dynamic_rules</code> (array): Rules for dynamic responses</li>
+                    <li><code>description</code> (string): Endpoint description</li>
+                </ul>
+                
+                <h4>Update a Mock Endpoint</h4>
+                <pre><code>PUT /api/mocks/{id}</code></pre>
+                <p>Updates an existing mock endpoint. Fields are the same as for creation.</p>
+                
+                <h4>Delete a Mock Endpoint</h4>
+                <pre><code>DELETE /api/mocks/{id}</code></pre>
+                <p>Deletes a mock endpoint.</p>
+            </div>
+        </div>
+        
+        <div class="card mb-4" id="using-mocks">
+            <div class="card-header">
+                <h2>Using Mock Endpoints</h2>
+            </div>
+            <div class="card-body">
+                <p>Once you've created a mock endpoint, you can use it in your applications or test it directly.</p>
+                
+                <h4>URL Format</h4>
+                <pre><code>http://localhost:8080/mock/{project-name}/{endpoint-path}</code></pre>
+                
+                <h4>Path Parameters</h4>
+                <p>You can define path parameters in your endpoint path using curly braces:</p>
+                <pre><code>/api/users/{id}</code></pre>
+                <p>Then, when making a request to this endpoint, you can provide a value for the parameter:</p>
+                <pre><code>http://localhost:8080/mock/my-project/api/users/123</code></pre>
+                <p>The path parameter <code>id</code> will have the value <code>123</code>.</p>
+                
+                <h4>Query Parameters</h4>
+                <p>You can include query parameters in your requests:</p>
+                <pre><code>http://localhost:8080/mock/my-project/api/users?page=1&limit=10</code></pre>
+                <p>These parameters can be used in dynamic responses.</p>
+                
+                <h4>Request Body</h4>
+                <p>For POST, PUT, and PATCH requests, you can include a request body. This can also be used in dynamic responses.</p>
+            </div>
+        </div>
+        
+        <div class="card mb-4" id="dynamic-responses">
+            <div class="card-header">
+                <h2>Dynamic Responses</h2>
+            </div>
+            <div class="card-body">
+                <p>Dynamic responses allow you to generate different responses based on rules or randomization.</p>
+                
+                <h4>Enabling Dynamic Responses</h4>
+                <p>To enable dynamic responses for a mock endpoint, check the "Dynamic Response" checkbox when creating or editing the endpoint.</p>
+                
+                <h4>Dynamic Rules</h4>
+                <p>Dynamic rules are defined as an array of objects, each with a specific type and target:</p>
+                
+                <h5>Random Number</h5>
+                <pre><code>{
+  "type": "random_number",
+  "target": "data.id",
+  "min": 1,
+  "max": 1000
+}</code></pre>
+                <p>Generates a random number between <code>min</code> and <code>max</code> and sets it at the specified <code>target</code> path in the response body.</p>
+                
+                <h5>Random String</h5>
+                <pre><code>{
+  "type": "random_string",
+  "target": "data.token",
+  "length": 16,
+  "characters": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+}</code></pre>
+                <p>Generates a random string of the specified <code>length</code> using the provided <code>characters</code>.</p>
+                
+                <h5>Random Boolean</h5>
+                <pre><code>{
+  "type": "random_boolean",
+  "target": "data.active"
+}</code></pre>
+                <p>Generates a random boolean value (true or false).</p>
+                
+                <h5>Random Date</h5>
+                <pre><code>{
+  "type": "random_date",
+  "target": "data.created_at",
+  "format": "Y-m-d H:i:s",
+  "min_days": -30,
+  "max_days": 30
+}</code></pre>
+                <p>Generates a random date between <code>min_days</code> and <code>max_days</code> from the current date, formatted according to <code>format</code>.</p>
+                
+                <h5>Request Parameter</h5>
+                <pre><code>{
+  "type": "request_param",
+  "target": "data.user_id",
+  "param_type": "path",
+  "param_name": "id"
+}</code></pre>
+                <p>Uses a parameter from the request in the response. <code>param_type</code> can be "path", "query", or "body".</p>
+                
+                <h5>Conditional</h5>
+                <pre><code>{
+  "type": "conditional",
+  "target": "message",
+  "condition": {
+    "param_type": "query",
+    "param_name": "status",
+    "operator": "equals",
+    "value": "active"
+  },
+  "then": "User is active",
+  "else": "User is inactive"
+}</code></pre>
+                <p>Sets different values based on a condition. Operators include "equals", "not_equals", "greater_than", "less_than", and "contains".</p>
+            </div>
+        </div>
+        
+        <div class="card mb-4" id="sharing">
+            <div class="card-header">
+                <h2>Sharing</h2>
+            </div>
+            <div class="card-body">
+                <p>You can share your mock endpoints with others using share links.</p>
+                
+                <h4>Sharing a Project</h4>
+                <ol>
+                    <li>Go to the <a href="/dashboard/projects">Projects</a> page</li>
+                    <li>Click the share button for the project you want to share</li>
+                    <li>Copy the share links</li>
+                </ol>
+                
+                <h4>Share Links</h4>
+                <p>There are two types of share links:</p>
+                <ul>
+                    <li><strong>Project API Link</strong>: Allows access to the project data via the API</li>
+                    <li><strong>Mock Endpoints Base URL</strong>: Allows access to the mock endpoints</li>
+                </ul>
+                
+                <h4>Accessing Shared Mock Endpoints</h4>
+                <p>Shared mock endpoints can be accessed using the following URL format:</p>
+                <pre><code>http://localhost:8080/share/{token}/{endpoint-path}</code></pre>
+                <p>For example:</p>
+                <pre><code>http://localhost:8080/share/abc123/api/users</code></pre>
+            </div>
+        </div>
+        
+        <div class="card mb-4" id="examples">
+            <div class="card-header">
+                <h2>Examples</h2>
+            </div>
+            <div class="card-body">
+                <h4>Example 1: User API</h4>
+                <p>Create a mock endpoint for a user API:</p>
+                <ul>
+                    <li>Method: GET</li>
+                    <li>Path: /api/users/{id}</li>
+                    <li>Response Body:</li>
+                </ul>
+                <pre><code>{
+  "id": 123,
+  "name": "John Doe",
+  "email": "john@example.com",
+  "active": true,
+  "created_at": "2023-01-01T00:00:00Z"
+}</code></pre>
+                
+                <h4>Example 2: Dynamic User API</h4>
+                <p>Create a dynamic mock endpoint for a user API:</p>
+                <ul>
+                    <li>Method: GET</li>
+                    <li>Path: /api/users/{id}</li>
+                    <li>Response Body:</li>
+                </ul>
+                <pre><code>{
+  "id": 0,
+  "name": "User",
+  "email": "user@example.com",
+  "active": true,
+  "created_at": "2023-01-01T00:00:00Z"
+}</code></pre>
+                <p>Dynamic Rules:</p>
+                <pre><code>[
+  {
+    "type": "request_param",
+    "target": "id",
+    "param_type": "path",
+    "param_name": "id"
+  },
+  {
+    "type": "random_string",
+    "target": "name",
+    "length": 10
+  },
+  {
+    "type": "random_boolean",
+    "target": "active"
+  },
+  {
+    "type": "random_date",
+    "target": "created_at",
+    "format": "Y-m-d\\TH:i:s\\Z",
+    "min_days": -365,
+    "max_days": 0
+  }
+]</code></pre>
+                
+                <h4>Example 3: Login API</h4>
+                <p>Create a mock endpoint for a login API:</p>
+                <ul>
+                    <li>Method: POST</li>
+                    <li>Path: /api/login</li>
+                    <li>Response Body:</li>
+                </ul>
+                <pre><code>{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 123,
+    "name": "John Doe"
+  }
+}</code></pre>
+                <p>Dynamic Rules:</p>
+                <pre><code>[
+  {
+    "type": "random_string",
+    "target": "token",
+    "length": 32
+  },
+  {
+    "type": "conditional",
+    "target": "user.name",
+    "condition": {
+      "param_type": "body",
+      "param_name": "username",
+      "operator": "equals",
+      "value": "admin"
+    },
+    "then": "Administrator",
+    "else": "Regular User"
+  }
+]</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+    
+    // Highlight active section in sidebar
+    window.addEventListener('scroll', function() {
+        const sections = document.querySelectorAll('.card');
+        const navLinks = document.querySelectorAll('.list-group-item');
+        
+        let currentSection = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            
+            if (pageYOffset >= sectionTop - 100) {
+                currentSection = '#' + section.getAttribute('id');
+            }
+        });
+        
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === currentSection) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
